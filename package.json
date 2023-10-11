@@ -3,58 +3,9 @@
   "version": "0.19.2",
   "author": "DFINITY Stiftung <sdk@dfinity.org>",
   "license": "Apache-2.0",
-  "description": "JavaScript and TypeScript library to work with candid interfaces",
-  "homepage": "https://internetcomputer.org",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/dfinity/agent-js.git",
-    "directory": "packages/candid"
-  },
-  "bugs": {
-    "url": "https://github.com/dfinity/agent-js/issues"
-  },
-  "keywords": [
-    "internet computer",
-    "ic",
-    "dfinity",
-    "canister",
-    "webauthn",
-    "identity",
-    "principal",
-    "dfx",
-    "candid",
-    "motoko",
-    "javascript",
-    "typescript",
-    "blockchain",
-    "crypto",
-    "distributed",
-    "api"
-  ],
   "main": "./lib/cjs/index.js",
   "module": "./lib/esm/index.js",
-  "unpkg": "./lib/esm/index",
-  "scripts": {
-    "build": "tsc -b && tsc -p tsconfig-cjs.json",
-    "bundle": "esbuild --bundle src/index.ts --outfile=dist/index.js",
-    "size-limit": "size-limit",
-    "ci": "npm run prettier && npm run lint && npm run test",
-    "lint": "eslint 'src' --ext '.js,.jsx,.ts,.tsx'",
-    "lint:fix": "npm run lint -- --fix",
-    "make:docs/reference": "typedoc src/index.ts --out ../../docs/generated/candid --excludeInternal",
-    "prettier": "prettier --check \"src/**/*.ts\"",
-    "prettier:write": "npm run prettier -- --write",
-    "test": "jest",
-    "test:coverage": "jest --verbose --collectCoverage"
-  },
   "peerDependencies": {
     "@dfinity/principal": "^0.19.2"
-  },
-  "size-limit": [
-    {
-      "path": "./dist/index.js",
-      "limit": "100 kB",
-      "webpack": false
-    }
-  ]
+  }
 }
