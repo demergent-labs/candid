@@ -132,6 +132,7 @@ export const idlFactory = ({ IDL }) => {
       ),
   });
 };
+
 /**
  * @deprecated Import IDL types directly from this module instead of using this factory function.
  */

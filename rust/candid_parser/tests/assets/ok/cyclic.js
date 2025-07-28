@@ -27,6 +27,7 @@ export const idlFactory = ({ IDL }) => {
   const X = Y;
   return IDL.Service({ 'f' : IDL.Func([A, B, C, X, Y, Z], [], []) });
 };
+
 /**
  * @deprecated Import IDL types directly from this module instead of using this factory function.
  */

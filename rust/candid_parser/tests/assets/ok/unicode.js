@@ -45,6 +45,7 @@ export const idlFactory = ({ IDL }) => {
     '👀' : IDL.Func([IDL.Nat], [IDL.Nat], ['query']),
   });
 };
+
 /**
  * @deprecated Import IDL types directly from this module instead of using this factory function.
  */

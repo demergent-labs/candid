@@ -23,6 +23,7 @@ export const idlFactory = ({ IDL }) => {
     'set' : IDL.Func([List], [List], []),
   });
 };
+
 /**
  * @deprecated Import IDL types directly from this module instead of using this factory function.
  */

@@ -60,6 +60,7 @@ export const idlFactory = ({ IDL }) => {
   );
   return s.getType();
 };
+
 /**
  * @deprecated Import IDL types directly from this module instead of using this factory function.
  */

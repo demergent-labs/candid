@@ -330,6 +330,7 @@ pub fn compile(env: &TypeEnv, actor: &Option<Type>) -> String {
                 .append(RcDoc::hardline())
                 .append(factory_doc)
                 .append(RcDoc::hardline())
+                .append(RcDoc::hardline())
                 .append(init_doc);
                 
             full_doc.pretty(LINE_WIDTH).to_string()

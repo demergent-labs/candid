@@ -59,6 +59,7 @@ export const idlFactory = ({ IDL }) => {
     'high_order_fn_via_record_inline' : IDL.Func([RInline], [IDL.Nat], []),
   });
 };
+
 /**
  * @deprecated Import IDL types directly from this module instead of using this factory function.
  */
