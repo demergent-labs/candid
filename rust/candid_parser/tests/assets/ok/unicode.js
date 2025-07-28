@@ -1,3 +1,25 @@
+import { IDL } from '@dfinity/candid';
+
+const A = IDL.Record({
+  '\u{e000}' : IDL.Nat,
+  '📦🍦' : IDL.Nat,
+  '字段名' : IDL.Nat,
+  '字 段 名2' : IDL.Nat,
+});
+const B = IDL.Variant({
+  '' : IDL.Null,
+  '空的' : IDL.Null,
+  '  空的  ' : IDL.Null,
+  '1⃣️2⃣️3⃣️' : IDL.Null,
+});
+
+export { A };
+export { B };
+
+
+/**
+ * @deprecated Use the individual type exports instead of the factory function.
+ */
 export const idlFactory = ({ IDL }) => {
   const A = IDL.Record({
     '\u{e000}' : IDL.Nat,
@@ -18,4 +40,7 @@ export const idlFactory = ({ IDL }) => {
     '👀' : IDL.Func([IDL.Nat], [IDL.Nat], ['query']),
   });
 };
+/**
+ * @deprecated Use the individual type exports instead of the factory function.
+ */
 export const init = ({ IDL }) => { return []; };

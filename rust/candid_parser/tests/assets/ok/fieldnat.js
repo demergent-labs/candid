@@ -1,3 +1,15 @@
+import { IDL } from '@dfinity/candid';
+
+const tuple = IDL.Tuple(IDL.Text, IDL.Text);
+const non_tuple = IDL.Record({ _1_ : IDL.Text, _2_ : IDL.Text });
+
+export { tuple };
+export { non_tuple };
+
+
+/**
+ * @deprecated Use the individual type exports instead of the factory function.
+ */
 export const idlFactory = ({ IDL }) => {
   const tuple = IDL.Tuple(IDL.Text, IDL.Text);
   const non_tuple = IDL.Record({ _1_ : IDL.Text, _2_ : IDL.Text });
@@ -31,4 +43,7 @@ export const idlFactory = ({ IDL }) => {
       ),
   });
 };
+/**
+ * @deprecated Use the individual type exports instead of the factory function.
+ */
 export const init = ({ IDL }) => { return []; };

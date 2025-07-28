@@ -1,3 +1,90 @@
+import { IDL } from '@dfinity/candid';
+
+const bitcoin_network = IDL.Variant({
+  'mainnet' : IDL.Null,
+  'testnet' : IDL.Null,
+});
+const bitcoin_address = IDL.Text;
+const get_balance_request = IDL.Record({
+  'network' : bitcoin_network,
+  'address' : bitcoin_address,
+  'min_confirmations' : IDL.Opt(IDL.Nat32),
+});
+const satoshi = IDL.Nat64;
+const get_current_fee_percentiles_request = IDL.Record({
+  'network' : bitcoin_network,
+});
+const millisatoshi_per_byte = IDL.Nat64;
+const get_utxos_request = IDL.Record({
+  'network' : bitcoin_network,
+  'filter' : IDL.Opt(
+    IDL.Variant({ 'page' : IDL.Vec(IDL.Nat8), 'min_confirmations' : IDL.Nat32 })
+  ),
+  'address' : bitcoin_address,
+});
+const block_hash = IDL.Vec(IDL.Nat8);
+const outpoint = IDL.Record({ 'txid' : IDL.Vec(IDL.Nat8), 'vout' : IDL.Nat32 });
+const utxo = IDL.Record({
+  'height' : IDL.Nat32,
+  'value' : satoshi,
+  'outpoint' : outpoint,
+});
+const get_utxos_response = IDL.Record({
+  'next_page' : IDL.Opt(IDL.Vec(IDL.Nat8)),
+  'tip_height' : IDL.Nat32,
+  'tip_block_hash' : block_hash,
+  'utxos' : IDL.Vec(utxo),
+});
+const send_transaction_request = IDL.Record({
+  'transaction' : IDL.Vec(IDL.Nat8),
+  'network' : bitcoin_network,
+});
+const canister_id = IDL.Principal;
+const definite_canister_settings = IDL.Record({
+  'freezing_threshold' : IDL.Nat,
+  'controllers' : IDL.Vec(IDL.Principal),
+  'memory_allocation' : IDL.Nat,
+  'compute_allocation' : IDL.Nat,
+});
+const canister_settings = IDL.Record({
+  'freezing_threshold' : IDL.Opt(IDL.Nat),
+  'controllers' : IDL.Opt(IDL.Vec(IDL.Principal)),
+  'memory_allocation' : IDL.Opt(IDL.Nat),
+  'compute_allocation' : IDL.Opt(IDL.Nat),
+});
+const ecdsa_curve = IDL.Variant({ 'secp256k1' : IDL.Null });
+const http_header = IDL.Record({ 'value' : IDL.Text, 'name' : IDL.Text });
+const http_response = IDL.Record({
+  'status' : IDL.Nat,
+  'body' : IDL.Vec(IDL.Nat8),
+  'headers' : IDL.Vec(http_header),
+});
+const wasm_module = IDL.Vec(IDL.Nat8);
+
+export { bitcoin_network };
+export { bitcoin_address };
+export { get_balance_request };
+export { satoshi };
+export { get_current_fee_percentiles_request };
+export { millisatoshi_per_byte };
+export { get_utxos_request };
+export { block_hash };
+export { outpoint };
+export { utxo };
+export { get_utxos_response };
+export { send_transaction_request };
+export { canister_id };
+export { definite_canister_settings };
+export { canister_settings };
+export { ecdsa_curve };
+export { http_header };
+export { http_response };
+export { wasm_module };
+
+
+/**
+ * @deprecated Use the individual type exports instead of the factory function.
+ */
 export const idlFactory = ({ IDL }) => {
   const bitcoin_network = IDL.Variant({
     'mainnet' : IDL.Null,
@@ -230,4 +317,7 @@ export const idlFactory = ({ IDL }) => {
       ),
   });
 };
+/**
+ * @deprecated Use the individual type exports instead of the factory function.
+ */
 export const init = ({ IDL }) => { return []; };

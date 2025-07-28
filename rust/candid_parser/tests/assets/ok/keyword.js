@@ -1,3 +1,42 @@
+import { IDL } from '@dfinity/candid';
+
+const if_ = IDL.Rec();
+const list = IDL.Rec();
+const o = IDL.Rec();
+const stream = IDL.Rec();
+const t = IDL.Rec();
+o.fill(IDL.Opt(o));
+const node = IDL.Record({ 'head' : IDL.Nat, 'tail' : list });
+list.fill(IDL.Opt(node));
+if_.fill(
+  IDL.Variant({
+    'branch' : IDL.Record({ 'val' : IDL.Int, 'left' : if_, 'right' : if_ }),
+    'leaf' : IDL.Int,
+  })
+);
+stream.fill(
+  IDL.Opt(
+    IDL.Record({ 'head' : IDL.Nat, 'next' : IDL.Func([], [stream], ['query']) })
+  )
+);
+const return_ = IDL.Service({
+  'f' : t,
+  'g' : IDL.Func([list], [if_, stream], []),
+});
+t.fill(IDL.Func([return_], [], []));
+
+export { o };
+export { node };
+export { list };
+export { if_ };
+export { stream };
+export { return_ };
+export { t };
+
+
+/**
+ * @deprecated Use the individual type exports instead of the factory function.
+ */
 export const idlFactory = ({ IDL }) => {
   const if_ = IDL.Rec();
   const list = IDL.Rec();
@@ -63,4 +102,7 @@ export const idlFactory = ({ IDL }) => {
       ),
   });
 };
+/**
+ * @deprecated Use the individual type exports instead of the factory function.
+ */
 export const init = ({ IDL }) => { return []; };

@@ -1,3 +1,27 @@
+import { IDL } from '@dfinity/candid';
+
+const Fn = IDL.Func([IDL.Nat], [IDL.Nat], ['query']);
+const Gn = Fn;
+const R = IDL.Record({
+  'x' : IDL.Nat,
+  'fn' : Fn,
+  'gn' : Gn,
+  'nested' : IDL.Record({ 'fn' : Gn }),
+});
+const RInline = IDL.Record({
+  'x' : IDL.Nat,
+  'fn' : IDL.Func([IDL.Nat], [IDL.Nat], ['query']),
+});
+
+export { Fn };
+export { Gn };
+export { R };
+export { RInline };
+
+
+/**
+ * @deprecated Use the individual type exports instead of the factory function.
+ */
 export const idlFactory = ({ IDL }) => {
   const Fn = IDL.Func([IDL.Nat], [IDL.Nat], ['query']);
   const Gn = Fn;
@@ -25,4 +49,7 @@ export const idlFactory = ({ IDL }) => {
     'high_order_fn_via_record_inline' : IDL.Func([RInline], [IDL.Nat], []),
   });
 };
+/**
+ * @deprecated Use the individual type exports instead of the factory function.
+ */
 export const init = ({ IDL }) => { return []; };

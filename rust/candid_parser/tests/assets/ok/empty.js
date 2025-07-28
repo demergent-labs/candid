@@ -1,3 +1,14 @@
+import { IDL } from '@dfinity/candid';
+
+const T = IDL.Rec();
+T.fill(IDL.Tuple(T));
+
+export { T };
+
+
+/**
+ * @deprecated Use the individual type exports instead of the factory function.
+ */
 export const idlFactory = ({ IDL }) => {
   const T = IDL.Rec();
   T.fill(IDL.Tuple(T));
@@ -11,4 +22,7 @@ export const idlFactory = ({ IDL }) => {
       ),
   });
 };
+/**
+ * @deprecated Use the individual type exports instead of the factory function.
+ */
 export const init = ({ IDL }) => { return []; };

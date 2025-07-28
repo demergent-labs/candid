@@ -1,3 +1,18 @@
+import { IDL } from '@dfinity/candid';
+
+const Service = IDL.Rec();
+const Func = IDL.Func([], [Service], []);
+Service.fill(IDL.Service({ 'f' : Func }));
+const Service2 = Service;
+
+export { Func };
+export { Service };
+export { Service2 };
+
+
+/**
+ * @deprecated Use the individual type exports instead of the factory function.
+ */
 export const idlFactory = ({ IDL }) => {
   const Service = IDL.Rec();
   const Func = IDL.Func([], [Service], []);
@@ -23,4 +38,7 @@ export const idlFactory = ({ IDL }) => {
       ),
   });
 };
+/**
+ * @deprecated Use the individual type exports instead of the factory function.
+ */
 export const init = ({ IDL }) => { return []; };

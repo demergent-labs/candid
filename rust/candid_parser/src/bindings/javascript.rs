@@ -223,6 +223,17 @@ fn pp_defs<'a>(
     recs_doc.append(defs)
 }
 
+fn pp_type_exports<'a>(
+    def_list: &'a [&'a str],
+    _recs: &'a BTreeSet<&'a str>,
+) -> RcDoc<'a> {
+    lines(def_list.iter().map(|id| {
+        str("export { ")
+            .append(ident(id))
+            .append(" };")
+    }))
+}
+
 fn pp_actor<'a>(ty: &'a Type, recs: &'a BTreeSet<&'a str>) -> RcDoc<'a> {
     match ty.as_ref() {
         TypeInner::Service(_) => pp_ty(ty),
@@ -243,34 +254,87 @@ pub fn compile(env: &TypeEnv, actor: &Option<Type>) -> String {
         None => {
             let def_list: Vec<_> = env.0.iter().map(|pair| pair.0.as_ref()).collect();
             let recs = infer_rec(env, &def_list).unwrap();
+            
+            // Add IDL import at the top
+            let import_doc = str("import { IDL } from '@dfinity/candid';");
             let doc = pp_defs(env, &def_list, &recs);
-            doc.pretty(LINE_WIDTH).to_string()
+            // Export individual types
+            let exports = pp_type_exports(&def_list, &recs);
+            
+            let result = import_doc
+                .append(RcDoc::hardline())
+                .append(RcDoc::hardline())
+                .append(doc)
+                .append(RcDoc::hardline())
+                .append(exports)
+                .pretty(LINE_WIDTH).to_string();
+            result
         }
         Some(actor) => {
+            // Get main actor definitions
             let def_list = chase_actor(env, actor).unwrap();
             let recs = infer_rec(env, &def_list).unwrap();
-            let defs = pp_defs(env, &def_list, &recs);
+            
+            // Get init types
             let types = if let TypeInner::Class(ref args, _) = actor.as_ref() {
                 args.iter().map(|arg| arg.typ.clone()).collect::<Vec<_>>()
             } else {
                 Vec::new()
             };
-            let init = types.as_slice();
-            let actor = kwd("return").append(pp_actor(actor, &recs)).append(";");
-            let body = defs.append(actor);
-            let doc = str("export const idlFactory = ({ IDL }) => ")
-                .append(enclose_space("{", body, "};"));
-            // export init args
-            let init_defs = chase_types(env, init).unwrap();
+            let init_types: Vec<Type> = types;
+            let init_defs = chase_types(env, &init_types).unwrap();
             let init_recs = infer_rec(env, &init_defs).unwrap();
+            
+            // Generate the type definitions for the main service
+            let main_defs = pp_defs(env, &def_list, &recs);
+            let main_exports = pp_type_exports(&def_list, &recs);
+            
+            // Generate the factory function body
+            let defs = pp_defs(env, &def_list, &recs);
+            let actor_func = kwd("return").append(pp_actor(actor, &recs)).append(";");
+            let body = defs.append(actor_func);
+            
+            // Generate init function body
             let init_defs_doc = pp_defs(env, &init_defs, &init_recs);
-            let init_doc = kwd("return").append(pp_rets(init)).append(";");
-            let init_doc = init_defs_doc.append(init_doc);
-            let init_doc =
-                str("export const init = ({ IDL }) => ").append(enclose_space("{", init_doc, "};"));
-            let init_doc = init_doc.pretty(LINE_WIDTH).to_string();
-            let doc = doc.append(RcDoc::hardline()).append(init_doc);
-            doc.pretty(LINE_WIDTH).to_string()
+            let init_body = kwd("return").append(pp_rets(&init_types)).append(";");
+            let init_body_doc = init_defs_doc.append(init_body);
+            
+            // Add IDL import at the top
+            let import_doc = str("import { IDL } from '@dfinity/candid';");
+            
+            // Add deprecation comment for idlFactory
+            let deprecated_factory_comment = str("/**").append(RcDoc::hardline())
+                .append(" * @deprecated Use the individual type exports instead of the factory function.")
+                .append(RcDoc::hardline())
+                .append(" */");
+            
+            let factory_doc = deprecated_factory_comment.append(RcDoc::hardline())
+                .append(str("export const idlFactory = ({ IDL }) => "))
+                .append(enclose_space("{", body, "};"));
+            
+            // Add deprecation comment for init
+            let deprecated_init_comment = str("/**").append(RcDoc::hardline())
+                .append(" * @deprecated Use the individual type exports instead of the factory function.")
+                .append(RcDoc::hardline())
+                .append(" */");
+            
+            let init_doc = deprecated_init_comment.append(RcDoc::hardline())
+                .append(str("export const init = ({ IDL }) => "))
+                .append(enclose_space("{", init_body_doc, "};"));
+            
+            let full_doc = import_doc
+                .append(RcDoc::hardline())
+                .append(RcDoc::hardline())
+                .append(main_defs)
+                .append(RcDoc::hardline())
+                .append(main_exports)
+                .append(RcDoc::hardline())
+                .append(RcDoc::hardline())
+                .append(factory_doc)
+                .append(RcDoc::hardline())
+                .append(init_doc);
+                
+            full_doc.pretty(LINE_WIDTH).to_string()
         }
     }
 }
