@@ -7,9 +7,13 @@ const stream = IDL.Rec();
 const t = IDL.Rec();
 const tree = IDL.Rec();
 const node = IDL.Record({ 'head' : IDL.Nat, 'tail' : list });
+export { node };
 list.fill(IDL.Opt(node));
+export { list };
 const my_type = IDL.Principal;
+export { my_type };
 List.fill(IDL.Opt(IDL.Record({ 'head' : IDL.Int, 'tail' : List })));
+export { List };
 const nested = IDL.Record({
   _0_ : IDL.Nat,
   _1_ : IDL.Nat,
@@ -24,6 +28,7 @@ const nested = IDL.Record({
   }),
   _42_ : IDL.Nat,
 });
+export { nested };
 const broker = IDL.Service({
   'find' : IDL.Func(
       [IDL.Text],
@@ -36,6 +41,7 @@ const broker = IDL.Service({
       [],
     ),
 });
+export { broker };
 const nested_res = IDL.Variant({
   'Ok' : IDL.Variant({ 'Ok' : IDL.Null, 'Err' : IDL.Null }),
   'Err' : IDL.Variant({
@@ -43,68 +49,101 @@ const nested_res = IDL.Variant({
     'Err' : IDL.Tuple(IDL.Int),
   }),
 });
+export { nested_res };
 const res = IDL.Variant({
   'Ok' : IDL.Tuple(IDL.Int, IDL.Nat),
   'Err' : IDL.Record({ 'error' : IDL.Text }),
 });
+export { res };
 const f = IDL.Func(
     [List, IDL.Func([IDL.Int32], [IDL.Int64], [])],
     [IDL.Opt(List), res],
     [],
   );
+export { f };
 const b = IDL.Tuple(IDL.Int, IDL.Nat);
+export { b };
 const a = IDL.Variant({ 'a' : IDL.Null, 'b' : b });
+export { a };
 const nested_records = IDL.Record({
   'nested' : IDL.Opt(IDL.Record({ 'nested_field' : IDL.Text })),
 });
+export { nested_records };
 const my_variant = IDL.Variant({
   'a' : IDL.Record({ 'b' : IDL.Text }),
   'c' : IDL.Opt(
     IDL.Record({ 'd' : IDL.Text, 'e' : IDL.Vec(IDL.Record({ 'f' : IDL.Nat })) })
   ),
 });
+export { my_variant };
 const A = B;
+export { A };
 B.fill(IDL.Opt(A));
+export { B };
 tree.fill(
   IDL.Variant({
     'branch' : IDL.Record({ 'val' : IDL.Int, 'left' : tree, 'right' : tree }),
     'leaf' : IDL.Int,
   })
 );
+export { tree };
 stream.fill(
   IDL.Opt(
     IDL.Record({ 'head' : IDL.Nat, 'next' : IDL.Func([], [stream], ['query']) })
   )
 );
+export { stream };
 const s = IDL.Service({
   'f' : t,
   'g' : IDL.Func([list], [B, tree, stream], []),
 });
-t.fill(IDL.Func([s], [], []));
-
-export { node };
-export { list };
-export { my_type };
-export { List };
-export { nested };
-export { broker };
-export { nested_res };
-export { res };
-export { f };
-export { b };
-export { a };
-export { nested_records };
-export { my_variant };
-export { A };
-export { B };
-export { tree };
-export { stream };
 export { s };
+t.fill(IDL.Func([s], [], []));
 export { t };
 
+export const idlService = IDL.Service({
+  'f1' : IDL.Func([list, IDL.Vec(IDL.Nat8), IDL.Opt(IDL.Bool)], [], ['oneway']),
+  'g1' : IDL.Func(
+      [my_type, List, IDL.Opt(List), nested],
+      [IDL.Int, broker, nested_res],
+      ['query'],
+    ),
+  'h' : IDL.Func(
+      [
+        IDL.Vec(IDL.Opt(IDL.Text)),
+        IDL.Variant({ 'A' : IDL.Nat, 'B' : IDL.Opt(IDL.Text) }),
+        IDL.Opt(List),
+      ],
+      [IDL.Record({ _42_ : IDL.Record({}), 'id' : IDL.Nat })],
+      [],
+    ),
+  'i' : f,
+  'x' : IDL.Func(
+      [a, b],
+      [
+        IDL.Opt(a),
+        IDL.Opt(b),
+        IDL.Variant({
+          'Ok' : IDL.Record({ 'result' : IDL.Text }),
+          'Err' : IDL.Variant({ 'a' : IDL.Null, 'b' : IDL.Null }),
+        }),
+      ],
+      ['composite_query'],
+    ),
+  'y' : IDL.Func(
+      [nested_records],
+      [IDL.Tuple(nested_records, my_variant)],
+      ['query'],
+    ),
+  'f' : t,
+  'g' : IDL.Func([list], [B, tree, stream], []),
+  'bbbbb' : IDL.Func([b], [], []),
+});
+
+export const idlInit = [];
 
 /**
- * @deprecated Use the individual type exports instead of the factory function.
+ * @deprecated Import IDL types directly from this module instead of using this factory function.
  */
 export const idlFactory = ({ IDL }) => {
   const B = IDL.Rec();
@@ -238,6 +277,6 @@ export const idlFactory = ({ IDL }) => {
   });
 };
 /**
- * @deprecated Use the individual type exports instead of the factory function.
+ * @deprecated Import IDL types directly from this module instead of using this factory function.
  */
 export const init = ({ IDL }) => { return []; };

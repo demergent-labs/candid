@@ -1,14 +1,40 @@
 import { IDL } from '@dfinity/candid';
 
 const tuple = IDL.Tuple(IDL.Text, IDL.Text);
-const non_tuple = IDL.Record({ _1_ : IDL.Text, _2_ : IDL.Text });
-
 export { tuple };
+const non_tuple = IDL.Record({ _1_ : IDL.Text, _2_ : IDL.Text });
 export { non_tuple };
 
+export const idlService = IDL.Service({
+  'bab' : IDL.Func([IDL.Int, IDL.Nat], [], []),
+  'bar' : IDL.Func(
+      [IDL.Record({ '2' : IDL.Int })],
+      [IDL.Variant({ 'e20' : IDL.Null, 'e30' : IDL.Null })],
+      [],
+    ),
+  'bas' : IDL.Func(
+      [IDL.Tuple(IDL.Int, IDL.Int)],
+      [IDL.Tuple(IDL.Text, IDL.Nat)],
+      [],
+    ),
+  'baz' : IDL.Func(
+      [IDL.Record({ _2_ : IDL.Int, '2' : IDL.Nat })],
+      [IDL.Record({})],
+      [],
+    ),
+  'bba' : IDL.Func([tuple], [non_tuple], []),
+  'bib' : IDL.Func([IDL.Tuple(IDL.Int)], [IDL.Variant({ _0_ : IDL.Int })], []),
+  'foo' : IDL.Func(
+      [IDL.Record({ _2_ : IDL.Int })],
+      [IDL.Record({ _2_ : IDL.Int, '_2' : IDL.Int })],
+      [],
+    ),
+});
+
+export const idlInit = [];
 
 /**
- * @deprecated Use the individual type exports instead of the factory function.
+ * @deprecated Import IDL types directly from this module instead of using this factory function.
  */
 export const idlFactory = ({ IDL }) => {
   const tuple = IDL.Tuple(IDL.Text, IDL.Text);
@@ -44,6 +70,6 @@ export const idlFactory = ({ IDL }) => {
   });
 };
 /**
- * @deprecated Use the individual type exports instead of the factory function.
+ * @deprecated Import IDL types directly from this module instead of using this factory function.
  */
 export const init = ({ IDL }) => { return []; };

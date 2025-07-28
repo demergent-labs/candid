@@ -6,12 +6,16 @@ const t = IDL.Record({
   '\"\'' : IDL.Nat,
   '\\\n\'\"' : IDL.Nat,
 });
-
 export { t };
 
+export const idlService = IDL.Service({
+  '\n\'\"\'\'\"\"\r\t' : IDL.Func([t], [], []),
+});
+
+export const idlInit = [];
 
 /**
- * @deprecated Use the individual type exports instead of the factory function.
+ * @deprecated Import IDL types directly from this module instead of using this factory function.
  */
 export const idlFactory = ({ IDL }) => {
   const t = IDL.Record({
@@ -23,6 +27,6 @@ export const idlFactory = ({ IDL }) => {
   return IDL.Service({ '\n\'\"\'\'\"\"\r\t' : IDL.Func([t], [], []) });
 };
 /**
- * @deprecated Use the individual type exports instead of the factory function.
+ * @deprecated Import IDL types directly from this module instead of using this factory function.
  */
 export const init = ({ IDL }) => { return []; };

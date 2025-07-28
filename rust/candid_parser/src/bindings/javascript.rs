@@ -223,16 +223,37 @@ fn pp_defs<'a>(
     recs_doc.append(defs)
 }
 
-fn pp_type_exports<'a>(
+fn pp_defs_with_exports<'a>(
+    env: &'a TypeEnv,
     def_list: &'a [&'a str],
-    _recs: &'a BTreeSet<&'a str>,
+    recs: &'a BTreeSet<&'a str>,
 ) -> RcDoc<'a> {
-    lines(def_list.iter().map(|id| {
-        str("export { ")
+    let recs_doc = lines(
+        recs.iter()
+            .map(|id| kwd("const").append(ident(id)).append(" = IDL.Rec();")),
+    );
+    let defs = lines(def_list.iter().map(|id| {
+        let ty = env.find_type(id).unwrap();
+        let def_doc = if recs.contains(id) {
+            ident(id)
+                .append(".fill")
+                .append(enclose("(", pp_ty(ty), ");"))
+        } else {
+            kwd("const")
+                .append(ident(id))
+                .append(" = ")
+                .append(pp_ty(ty))
+                .append(";")
+        };
+        // Add export inline after each definition
+        let export_doc = str("export { ")
             .append(ident(id))
-            .append(" };")
-    }))
+            .append(" };");
+        def_doc.append(RcDoc::hardline()).append(export_doc)
+    }));
+    recs_doc.append(defs)
 }
+
 
 fn pp_actor<'a>(ty: &'a Type, recs: &'a BTreeSet<&'a str>) -> RcDoc<'a> {
     match ty.as_ref() {
@@ -257,16 +278,12 @@ pub fn compile(env: &TypeEnv, actor: &Option<Type>) -> String {
             
             // Add IDL import at the top
             let import_doc = str("import { IDL } from '@dfinity/candid';");
-            let doc = pp_defs(env, &def_list, &recs);
-            // Export individual types
-            let exports = pp_type_exports(&def_list, &recs);
+            let doc = pp_defs_with_exports(env, &def_list, &recs);
             
             let result = import_doc
                 .append(RcDoc::hardline())
                 .append(RcDoc::hardline())
                 .append(doc)
-                .append(RcDoc::hardline())
-                .append(exports)
                 .pretty(LINE_WIDTH).to_string();
             result
         }
@@ -286,8 +303,13 @@ pub fn compile(env: &TypeEnv, actor: &Option<Type>) -> String {
             let init_recs = infer_rec(env, &init_defs).unwrap();
             
             // Generate the type definitions for the main service
-            let main_defs = pp_defs(env, &def_list, &recs);
-            let main_exports = pp_type_exports(&def_list, &recs);
+            let main_defs = pp_defs_with_exports(env, &def_list, &recs);
+            
+            // Generate idlService export
+            let service_export = str("export const idlService = ").append(pp_actor(actor, &recs)).append(";");
+            
+            // Generate idlInit export 
+            let init_export = str("export const idlInit = ").append(pp_rets(&init_types)).append(";");
             
             // Generate the factory function body
             let defs = pp_defs(env, &def_list, &recs);
@@ -304,7 +326,7 @@ pub fn compile(env: &TypeEnv, actor: &Option<Type>) -> String {
             
             // Add deprecation comment for idlFactory
             let deprecated_factory_comment = str("/**").append(RcDoc::hardline())
-                .append(" * @deprecated Use the individual type exports instead of the factory function.")
+                .append(" * @deprecated Import IDL types directly from this module instead of using this factory function.")
                 .append(RcDoc::hardline())
                 .append(" */");
             
@@ -314,7 +336,7 @@ pub fn compile(env: &TypeEnv, actor: &Option<Type>) -> String {
             
             // Add deprecation comment for init
             let deprecated_init_comment = str("/**").append(RcDoc::hardline())
-                .append(" * @deprecated Use the individual type exports instead of the factory function.")
+                .append(" * @deprecated Import IDL types directly from this module instead of using this factory function.")
                 .append(RcDoc::hardline())
                 .append(" */");
             
@@ -327,7 +349,10 @@ pub fn compile(env: &TypeEnv, actor: &Option<Type>) -> String {
                 .append(RcDoc::hardline())
                 .append(main_defs)
                 .append(RcDoc::hardline())
-                .append(main_exports)
+                .append(service_export)
+                .append(RcDoc::hardline())
+                .append(RcDoc::hardline())
+                .append(init_export)
                 .append(RcDoc::hardline())
                 .append(RcDoc::hardline())
                 .append(factory_doc)

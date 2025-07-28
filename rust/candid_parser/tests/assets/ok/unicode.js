@@ -6,19 +6,26 @@ const A = IDL.Record({
   '字段名' : IDL.Nat,
   '字 段 名2' : IDL.Nat,
 });
+export { A };
 const B = IDL.Variant({
   '' : IDL.Null,
   '空的' : IDL.Null,
   '  空的  ' : IDL.Null,
   '1⃣️2⃣️3⃣️' : IDL.Null,
 });
-
-export { A };
 export { B };
 
+export const idlService = IDL.Service({
+  '' : IDL.Func([IDL.Nat], [IDL.Nat], []),
+  '✈️  🚗 ⛱️ ' : IDL.Func([], [], ['oneway']),
+  '函数名' : IDL.Func([A], [B], []),
+  '👀' : IDL.Func([IDL.Nat], [IDL.Nat], ['query']),
+});
+
+export const idlInit = [];
 
 /**
- * @deprecated Use the individual type exports instead of the factory function.
+ * @deprecated Import IDL types directly from this module instead of using this factory function.
  */
 export const idlFactory = ({ IDL }) => {
   const A = IDL.Record({
@@ -41,6 +48,6 @@ export const idlFactory = ({ IDL }) => {
   });
 };
 /**
- * @deprecated Use the individual type exports instead of the factory function.
+ * @deprecated Import IDL types directly from this module instead of using this factory function.
  */
 export const init = ({ IDL }) => { return []; };

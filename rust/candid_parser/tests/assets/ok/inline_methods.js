@@ -1,26 +1,40 @@
 import { IDL } from '@dfinity/candid';
 
 const Fn = IDL.Func([IDL.Nat], [IDL.Nat], ['query']);
+export { Fn };
 const Gn = Fn;
+export { Gn };
 const R = IDL.Record({
   'x' : IDL.Nat,
   'fn' : Fn,
   'gn' : Gn,
   'nested' : IDL.Record({ 'fn' : Gn }),
 });
+export { R };
 const RInline = IDL.Record({
   'x' : IDL.Nat,
   'fn' : IDL.Func([IDL.Nat], [IDL.Nat], ['query']),
 });
-
-export { Fn };
-export { Gn };
-export { R };
 export { RInline };
 
+export const idlService = IDL.Service({
+  'add_two' : IDL.Func([IDL.Nat], [IDL.Nat], []),
+  'fn' : Fn,
+  'high_order_fn' : IDL.Func([IDL.Nat, Fn], [IDL.Nat], []),
+  'high_order_fn_inline' : IDL.Func(
+      [IDL.Nat, IDL.Func([IDL.Nat], [IDL.Nat], ['query'])],
+      [IDL.Nat],
+      [],
+    ),
+  'high_order_fn_via_id' : IDL.Func([IDL.Nat, Gn], [Fn], []),
+  'high_order_fn_via_record' : IDL.Func([R], [IDL.Nat], []),
+  'high_order_fn_via_record_inline' : IDL.Func([RInline], [IDL.Nat], []),
+});
+
+export const idlInit = [];
 
 /**
- * @deprecated Use the individual type exports instead of the factory function.
+ * @deprecated Import IDL types directly from this module instead of using this factory function.
  */
 export const idlFactory = ({ IDL }) => {
   const Fn = IDL.Func([IDL.Nat], [IDL.Nat], ['query']);
@@ -50,6 +64,6 @@ export const idlFactory = ({ IDL }) => {
   });
 };
 /**
- * @deprecated Use the individual type exports instead of the factory function.
+ * @deprecated Import IDL types directly from this module instead of using this factory function.
  */
 export const init = ({ IDL }) => { return []; };
