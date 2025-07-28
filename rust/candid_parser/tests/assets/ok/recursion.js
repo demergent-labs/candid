@@ -1,35 +1,27 @@
 import { IDL } from '@dfinity/candid';
 
-const B = IDL.Rec();
-const list = IDL.Rec();
-const s = IDL.Rec();
-const stream = IDL.Rec();
-const tree = IDL.Rec();
-const t = IDL.Func([s], [], []);
-export { t };
-const node = IDL.Record({ 'head' : IDL.Nat, 'tail' : list });
-export { node };
+export const B = IDL.Rec();
+export const list = IDL.Rec();
+export const s = IDL.Rec();
+export const stream = IDL.Rec();
+export const tree = IDL.Rec();
+export const t = IDL.Func([s], [], []);
+export const node = IDL.Record({ 'head' : IDL.Nat, 'tail' : list });
 list.fill(IDL.Opt(node));
-export { list };
-const A = B;
-export { A };
+export const A = B;
 B.fill(IDL.Opt(A));
-export { B };
 tree.fill(
   IDL.Variant({
     'branch' : IDL.Record({ 'val' : IDL.Int, 'left' : tree, 'right' : tree }),
     'leaf' : IDL.Int,
   })
 );
-export { tree };
 stream.fill(
   IDL.Opt(
     IDL.Record({ 'head' : IDL.Nat, 'next' : IDL.Func([], [stream], ['query']) })
   )
 );
-export { stream };
 s.fill(IDL.Service({ 'f' : t, 'g' : IDL.Func([list], [B, tree, stream], []) }));
-export { s };
 
 export const idlService = s.getType();
 

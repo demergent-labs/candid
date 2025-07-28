@@ -1,10 +1,8 @@
 import { IDL } from '@dfinity/candid';
 
-const List = IDL.Rec();
+export const List = IDL.Rec();
 List.fill(IDL.Opt(IDL.Tuple(IDL.Int, List)));
-export { List };
-const Profile = IDL.Record({ 'age' : IDL.Nat8, 'name' : IDL.Text });
-export { Profile };
+export const Profile = IDL.Record({ 'age' : IDL.Nat8, 'name' : IDL.Text });
 
 export const idlService = IDL.Service({
   'get' : IDL.Func([], [List], []),

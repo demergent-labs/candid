@@ -1,19 +1,17 @@
 import { IDL } from '@dfinity/candid';
 
-const A = IDL.Record({
+export const A = IDL.Record({
   '\u{e000}' : IDL.Nat,
   '📦🍦' : IDL.Nat,
   '字段名' : IDL.Nat,
   '字 段 名2' : IDL.Nat,
 });
-export { A };
-const B = IDL.Variant({
+export const B = IDL.Variant({
   '' : IDL.Null,
   '空的' : IDL.Null,
   '  空的  ' : IDL.Null,
   '1⃣️2⃣️3⃣️' : IDL.Null,
 });
-export { B };
 
 export const idlService = IDL.Service({
   '' : IDL.Func([IDL.Nat], [IDL.Nat], []),

@@ -1,18 +1,12 @@
 import { IDL } from '@dfinity/candid';
 
-const A = IDL.Rec();
-const C = A;
-export { C };
-const B = IDL.Opt(C);
-export { B };
+export const A = IDL.Rec();
+export const C = A;
+export const B = IDL.Opt(C);
 A.fill(IDL.Opt(B));
-export { A };
-const Z = A;
-export { Z };
-const Y = Z;
-export { Y };
-const X = Y;
-export { X };
+export const Z = A;
+export const Y = Z;
+export const X = Y;
 
 export const idlService = IDL.Service({
   'f' : IDL.Func([A, B, C, X, Y, Z], [], []),

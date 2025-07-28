@@ -1,9 +1,7 @@
 import { IDL } from '@dfinity/candid';
 
-const tuple = IDL.Tuple(IDL.Text, IDL.Text);
-export { tuple };
-const non_tuple = IDL.Record({ _1_ : IDL.Text, _2_ : IDL.Text });
-export { non_tuple };
+export const tuple = IDL.Tuple(IDL.Text, IDL.Text);
+export const non_tuple = IDL.Record({ _1_ : IDL.Text, _2_ : IDL.Text });
 
 export const idlService = IDL.Service({
   'bab' : IDL.Func([IDL.Int, IDL.Nat], [], []),

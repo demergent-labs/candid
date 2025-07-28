@@ -1,12 +1,11 @@
 import { IDL } from '@dfinity/candid';
 
-const t = IDL.Record({
+export const t = IDL.Record({
   '\"' : IDL.Nat,
   '\'' : IDL.Nat,
   '\"\'' : IDL.Nat,
   '\\\n\'\"' : IDL.Nat,
 });
-export { t };
 
 export const idlService = IDL.Service({
   '\n\'\"\'\'\"\"\r\t' : IDL.Func([t], [], []),

@@ -1,21 +1,17 @@
 import { IDL } from '@dfinity/candid';
 
-const Fn = IDL.Func([IDL.Nat], [IDL.Nat], ['query']);
-export { Fn };
-const Gn = Fn;
-export { Gn };
-const R = IDL.Record({
+export const Fn = IDL.Func([IDL.Nat], [IDL.Nat], ['query']);
+export const Gn = Fn;
+export const R = IDL.Record({
   'x' : IDL.Nat,
   'fn' : Fn,
   'gn' : Gn,
   'nested' : IDL.Record({ 'fn' : Gn }),
 });
-export { R };
-const RInline = IDL.Record({
+export const RInline = IDL.Record({
   'x' : IDL.Nat,
   'fn' : IDL.Func([IDL.Nat], [IDL.Nat], ['query']),
 });
-export { RInline };
 
 export const idlService = IDL.Service({
   'add_two' : IDL.Func([IDL.Nat], [IDL.Nat], []),

@@ -1,84 +1,71 @@
 import { IDL } from '@dfinity/candid';
 
-const bitcoin_network = IDL.Variant({
+export const bitcoin_network = IDL.Variant({
   'mainnet' : IDL.Null,
   'testnet' : IDL.Null,
 });
-export { bitcoin_network };
-const bitcoin_address = IDL.Text;
-export { bitcoin_address };
-const get_balance_request = IDL.Record({
+export const bitcoin_address = IDL.Text;
+export const get_balance_request = IDL.Record({
   'network' : bitcoin_network,
   'address' : bitcoin_address,
   'min_confirmations' : IDL.Opt(IDL.Nat32),
 });
-export { get_balance_request };
-const satoshi = IDL.Nat64;
-export { satoshi };
-const get_current_fee_percentiles_request = IDL.Record({
+export const satoshi = IDL.Nat64;
+export const get_current_fee_percentiles_request = IDL.Record({
   'network' : bitcoin_network,
 });
-export { get_current_fee_percentiles_request };
-const millisatoshi_per_byte = IDL.Nat64;
-export { millisatoshi_per_byte };
-const get_utxos_request = IDL.Record({
+export const millisatoshi_per_byte = IDL.Nat64;
+export const get_utxos_request = IDL.Record({
   'network' : bitcoin_network,
   'filter' : IDL.Opt(
     IDL.Variant({ 'page' : IDL.Vec(IDL.Nat8), 'min_confirmations' : IDL.Nat32 })
   ),
   'address' : bitcoin_address,
 });
-export { get_utxos_request };
-const block_hash = IDL.Vec(IDL.Nat8);
-export { block_hash };
-const outpoint = IDL.Record({ 'txid' : IDL.Vec(IDL.Nat8), 'vout' : IDL.Nat32 });
-export { outpoint };
-const utxo = IDL.Record({
+export const block_hash = IDL.Vec(IDL.Nat8);
+export const outpoint = IDL.Record({
+  'txid' : IDL.Vec(IDL.Nat8),
+  'vout' : IDL.Nat32,
+});
+export const utxo = IDL.Record({
   'height' : IDL.Nat32,
   'value' : satoshi,
   'outpoint' : outpoint,
 });
-export { utxo };
-const get_utxos_response = IDL.Record({
+export const get_utxos_response = IDL.Record({
   'next_page' : IDL.Opt(IDL.Vec(IDL.Nat8)),
   'tip_height' : IDL.Nat32,
   'tip_block_hash' : block_hash,
   'utxos' : IDL.Vec(utxo),
 });
-export { get_utxos_response };
-const send_transaction_request = IDL.Record({
+export const send_transaction_request = IDL.Record({
   'transaction' : IDL.Vec(IDL.Nat8),
   'network' : bitcoin_network,
 });
-export { send_transaction_request };
-const canister_id = IDL.Principal;
-export { canister_id };
-const definite_canister_settings = IDL.Record({
+export const canister_id = IDL.Principal;
+export const definite_canister_settings = IDL.Record({
   'freezing_threshold' : IDL.Nat,
   'controllers' : IDL.Vec(IDL.Principal),
   'memory_allocation' : IDL.Nat,
   'compute_allocation' : IDL.Nat,
 });
-export { definite_canister_settings };
-const canister_settings = IDL.Record({
+export const canister_settings = IDL.Record({
   'freezing_threshold' : IDL.Opt(IDL.Nat),
   'controllers' : IDL.Opt(IDL.Vec(IDL.Principal)),
   'memory_allocation' : IDL.Opt(IDL.Nat),
   'compute_allocation' : IDL.Opt(IDL.Nat),
 });
-export { canister_settings };
-const ecdsa_curve = IDL.Variant({ 'secp256k1' : IDL.Null });
-export { ecdsa_curve };
-const http_header = IDL.Record({ 'value' : IDL.Text, 'name' : IDL.Text });
-export { http_header };
-const http_response = IDL.Record({
+export const ecdsa_curve = IDL.Variant({ 'secp256k1' : IDL.Null });
+export const http_header = IDL.Record({
+  'value' : IDL.Text,
+  'name' : IDL.Text,
+});
+export const http_response = IDL.Record({
   'status' : IDL.Nat,
   'body' : IDL.Vec(IDL.Nat8),
   'headers' : IDL.Vec(http_header),
 });
-export { http_response };
-const wasm_module = IDL.Vec(IDL.Nat8);
-export { wasm_module };
+export const wasm_module = IDL.Vec(IDL.Nat8);
 
 export const idlService = IDL.Service({
   'bitcoin_get_balance' : IDL.Func([get_balance_request], [satoshi], []),

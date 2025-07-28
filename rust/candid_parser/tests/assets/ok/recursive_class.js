@@ -1,8 +1,7 @@
 import { IDL } from '@dfinity/candid';
 
-const s = IDL.Rec();
+export const s = IDL.Rec();
 s.fill(IDL.Service({ 'next' : IDL.Func([], [s], []) }));
-export { s };
 
 export const idlService = s.getType();
 

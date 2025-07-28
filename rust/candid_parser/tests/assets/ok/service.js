@@ -1,12 +1,9 @@
 import { IDL } from '@dfinity/candid';
 
-const Service = IDL.Rec();
-const Func = IDL.Func([], [Service], []);
-export { Func };
+export const Service = IDL.Rec();
+export const Func = IDL.Func([], [Service], []);
 Service.fill(IDL.Service({ 'f' : Func }));
-export { Service };
-const Service2 = Service;
-export { Service2 };
+export const Service2 = Service;
 
 export const idlService = IDL.Service({
   'asArray' : IDL.Func([], [IDL.Vec(Service2), IDL.Vec(Func)], ['query']),

@@ -201,10 +201,13 @@ fn pp_defs<'a>(
     env: &'a TypeEnv,
     def_list: &'a [&'a str],
     recs: &'a BTreeSet<&'a str>,
+    export: bool,
 ) -> RcDoc<'a> {
+    let export_prefix = if export { str("export ") } else { RcDoc::nil() };
+    
     let recs_doc = lines(
         recs.iter()
-            .map(|id| kwd("const").append(ident(id)).append(" = IDL.Rec();")),
+            .map(|id| export_prefix.clone().append(kwd("const")).append(ident(id)).append(" = IDL.Rec();")),
     );
     let defs = lines(def_list.iter().map(|id| {
         let ty = env.find_type(id).unwrap();
@@ -213,43 +216,13 @@ fn pp_defs<'a>(
                 .append(".fill")
                 .append(enclose("(", pp_ty(ty), ");"))
         } else {
-            kwd("const")
+            export_prefix.clone()
+                .append(kwd("const"))
                 .append(ident(id))
                 .append(" = ")
                 .append(pp_ty(ty))
                 .append(";")
         }
-    }));
-    recs_doc.append(defs)
-}
-
-fn pp_defs_with_exports<'a>(
-    env: &'a TypeEnv,
-    def_list: &'a [&'a str],
-    recs: &'a BTreeSet<&'a str>,
-) -> RcDoc<'a> {
-    let recs_doc = lines(
-        recs.iter()
-            .map(|id| kwd("const").append(ident(id)).append(" = IDL.Rec();")),
-    );
-    let defs = lines(def_list.iter().map(|id| {
-        let ty = env.find_type(id).unwrap();
-        let def_doc = if recs.contains(id) {
-            ident(id)
-                .append(".fill")
-                .append(enclose("(", pp_ty(ty), ");"))
-        } else {
-            kwd("const")
-                .append(ident(id))
-                .append(" = ")
-                .append(pp_ty(ty))
-                .append(";")
-        };
-        // Add export inline after each definition
-        let export_doc = str("export { ")
-            .append(ident(id))
-            .append(" };");
-        def_doc.append(RcDoc::hardline()).append(export_doc)
     }));
     recs_doc.append(defs)
 }
@@ -278,7 +251,7 @@ pub fn compile(env: &TypeEnv, actor: &Option<Type>) -> String {
             
             // Add IDL import at the top
             let import_doc = str("import { IDL } from '@dfinity/candid';");
-            let doc = pp_defs_with_exports(env, &def_list, &recs);
+            let doc = pp_defs(env, &def_list, &recs, true);
             
             let result = import_doc
                 .append(RcDoc::hardline())
@@ -303,7 +276,7 @@ pub fn compile(env: &TypeEnv, actor: &Option<Type>) -> String {
             let init_recs = infer_rec(env, &init_defs).unwrap();
             
             // Generate the type definitions for the main service
-            let main_defs = pp_defs_with_exports(env, &def_list, &recs);
+            let main_defs = pp_defs(env, &def_list, &recs, true);
             
             // Generate idlService export
             let service_export = str("export const idlService = ").append(pp_actor(actor, &recs)).append(";");
@@ -312,12 +285,12 @@ pub fn compile(env: &TypeEnv, actor: &Option<Type>) -> String {
             let init_export = str("export const idlInit = ").append(pp_rets(&init_types)).append(";");
             
             // Generate the factory function body
-            let defs = pp_defs(env, &def_list, &recs);
+            let defs = pp_defs(env, &def_list, &recs, false);
             let actor_func = kwd("return").append(pp_actor(actor, &recs)).append(";");
             let body = defs.append(actor_func);
             
             // Generate init function body
-            let init_defs_doc = pp_defs(env, &init_defs, &init_recs);
+            let init_defs_doc = pp_defs(env, &init_defs, &init_recs, false);
             let init_body = kwd("return").append(pp_rets(&init_types)).append(";");
             let init_body_doc = init_defs_doc.append(init_body);
             

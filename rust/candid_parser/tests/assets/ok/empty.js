@@ -1,8 +1,7 @@
 import { IDL } from '@dfinity/candid';
 
-const T = IDL.Rec();
+export const T = IDL.Rec();
 T.fill(IDL.Tuple(T));
-export { T };
 
 export const idlService = IDL.Service({
   'f' : IDL.Func([IDL.Record({})], [IDL.Variant({})], []),
