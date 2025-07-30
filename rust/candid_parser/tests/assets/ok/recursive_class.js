@@ -5,7 +5,7 @@ s.fill(IDL.Service({ 'next' : IDL.Func([], [s], []) }));
 
 export const idlService = s.getType();
 
-export const idlInit = [s];
+export const idlInitArgs = [s];
 
 /**
  * @deprecated Import IDL types directly from this module instead of using this factory function.

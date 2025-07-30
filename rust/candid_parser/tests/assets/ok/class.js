@@ -9,7 +9,7 @@ export const idlService = IDL.Service({
   'set' : IDL.Func([List], [List], []),
 });
 
-export const idlInit = [IDL.Int, List, Profile];
+export const idlInitArgs = [IDL.Int, List, Profile];
 
 /**
  * @deprecated Import IDL types directly from this module instead of using this factory function.

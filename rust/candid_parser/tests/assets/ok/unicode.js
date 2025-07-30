@@ -20,7 +20,7 @@ export const idlService = IDL.Service({
   '👀' : IDL.Func([IDL.Nat], [IDL.Nat], ['query']),
 });
 
-export const idlInit = [];
+export const idlInitArgs = [];
 
 /**
  * @deprecated Import IDL types directly from this module instead of using this factory function.

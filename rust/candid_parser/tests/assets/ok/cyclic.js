@@ -12,7 +12,7 @@ export const idlService = IDL.Service({
   'f' : IDL.Func([A, B, C, X, Y, Z], [], []),
 });
 
-export const idlInit = [];
+export const idlInitArgs = [];
 
 /**
  * @deprecated Import IDL types directly from this module instead of using this factory function.

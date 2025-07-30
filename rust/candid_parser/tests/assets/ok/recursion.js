@@ -25,7 +25,7 @@ s.fill(IDL.Service({ 'f' : t, 'g' : IDL.Func([list], [B, tree, stream], []) }));
 
 export const idlService = s.getType();
 
-export const idlInit = [];
+export const idlInitArgs = [];
 
 /**
  * @deprecated Import IDL types directly from this module instead of using this factory function.

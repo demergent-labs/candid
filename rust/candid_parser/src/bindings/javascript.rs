@@ -227,7 +227,6 @@ fn pp_defs<'a>(
     recs_doc.append(defs)
 }
 
-
 fn pp_actor<'a>(ty: &'a Type, recs: &'a BTreeSet<&'a str>) -> RcDoc<'a> {
     match ty.as_ref() {
         TypeInner::Service(_) => pp_ty(ty),
@@ -241,6 +240,34 @@ fn pp_actor<'a>(ty: &'a Type, recs: &'a BTreeSet<&'a str>) -> RcDoc<'a> {
         TypeInner::Class(_, t) => pp_actor(t, recs),
         _ => unreachable!(),
     }
+}
+
+fn pp_deprecation_comment<'a>() -> RcDoc<'a> {
+    str("/**").append(RcDoc::hardline())
+        .append(" * @deprecated Import IDL types directly from this module instead of using this factory function.")
+        .append(RcDoc::hardline())
+        .append(" */")
+        .append(RcDoc::hardline())
+}
+
+fn pp_idl_factory<'a>(env: &'a TypeEnv, def_list: &'a [&'a str], recs: &'a BTreeSet<&'a str>, actor: &'a Type) -> RcDoc<'a> {
+    let actor_func = kwd("return").append(pp_actor(actor, recs)).append(";");
+    let body = pp_defs(env, def_list, recs, false).append(actor_func);
+    pp_deprecation_comment()
+        .append(str("export const idlFactory = ({ IDL }) => "))
+        .append(enclose_space("{", body, "};"))
+}
+
+fn pp_init_function<'a>(env: &'a TypeEnv, init: &'a [Type]) -> String {
+    let init_defs = chase_types(env, init).unwrap();
+    let init_recs = infer_rec(env, &init_defs).unwrap();
+    let init_defs_doc = pp_defs(env, &init_defs, &init_recs, false);
+    let init_doc = kwd("return").append(pp_rets(init)).append(";");
+    let init_body = init_defs_doc.append(init_doc);
+    let result = pp_deprecation_comment()
+        .append(str("export const init = ({ IDL }) => "))
+        .append(enclose_space("{", init_body, "};"));
+    result.pretty(LINE_WIDTH).to_string()
 }
 
 pub fn compile(env: &TypeEnv, actor: &Option<Type>) -> String {
@@ -266,32 +293,14 @@ pub fn compile(env: &TypeEnv, actor: &Option<Type>) -> String {
                 Vec::new()
             };
             let init = types.as_slice();
+            
+            let import_doc = str("import { IDL } from '@dfinity/candid';");
             let defs = pp_defs(env, &def_list, &recs, true);
             let service_export = str("export const idlService = ").append(pp_actor(actor, &recs)).append(";");
-            let init_export = str("export const idlInit = ").append(pp_rets(init)).append(";");
-            let actor_func = kwd("return").append(pp_actor(actor, &recs)).append(";");
-            let body = pp_defs(env, &def_list, &recs, false).append(actor_func);
-            let factory_doc = str("/**").append(RcDoc::hardline())
-                .append(" * @deprecated Import IDL types directly from this module instead of using this factory function.")
-                .append(RcDoc::hardline())
-                .append(" */")
-                .append(RcDoc::hardline())
-                .append(str("export const idlFactory = ({ IDL }) => "))
-                .append(enclose_space("{", body, "};"));
-            let init_defs = chase_types(env, init).unwrap();
-            let init_recs = infer_rec(env, &init_defs).unwrap();
-            let init_defs_doc = pp_defs(env, &init_defs, &init_recs, false);
-            let init_doc = kwd("return").append(pp_rets(init)).append(";");
-            let init_doc = init_defs_doc.append(init_doc);
-            let init_doc = str("/**").append(RcDoc::hardline())
-                .append(" * @deprecated Import IDL types directly from this module instead of using this factory function.")
-                .append(RcDoc::hardline())
-                .append(" */")
-                .append(RcDoc::hardline())
-                .append(str("export const init = ({ IDL }) => "))
-                .append(enclose_space("{", init_doc, "};"));
-            let init_doc = init_doc.pretty(LINE_WIDTH).to_string();
-            let import_doc = str("import { IDL } from '@dfinity/candid';");
+            let init_args_export = str("export const idlInitArgs = ").append(pp_rets(init)).append(";");
+            let factory_doc = pp_idl_factory(env, &def_list, &recs, actor);
+            let init_function_str = pp_init_function(env, init);
+            
             let doc = import_doc
                 .append(RcDoc::hardline())
                 .append(RcDoc::hardline())
@@ -300,13 +309,13 @@ pub fn compile(env: &TypeEnv, actor: &Option<Type>) -> String {
                 .append(service_export)
                 .append(RcDoc::hardline())
                 .append(RcDoc::hardline())
-                .append(init_export)
+                .append(init_args_export)
                 .append(RcDoc::hardline())
                 .append(RcDoc::hardline())
                 .append(factory_doc)
                 .append(RcDoc::hardline())
                 .append(RcDoc::hardline())
-                .append(init_doc);
+                .append(init_function_str);
             doc.pretty(LINE_WIDTH).to_string()
         }
     }

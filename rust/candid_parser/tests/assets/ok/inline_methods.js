@@ -27,7 +27,7 @@ export const idlService = IDL.Service({
   'high_order_fn_via_record_inline' : IDL.Func([RInline], [IDL.Nat], []),
 });
 
-export const idlInit = [];
+export const idlInitArgs = [];
 
 /**
  * @deprecated Import IDL types directly from this module instead of using this factory function.
